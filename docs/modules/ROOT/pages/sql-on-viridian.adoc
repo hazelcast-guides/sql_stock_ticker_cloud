@@ -3,7 +3,7 @@ Make sure to rename this file to the name of your repository and add the filenam
 ////
 
 // Describe the title of your article by replacing 'Tutorial template' with the page name you want to publish.
-= SQL Basics on Viridian (Stock Ticker)
+= SQL Basics on Viridian Cloud (Stock Ticker)
 // Add required variables
 :page-layout: tutorial
 :page-product: cloud 
@@ -13,7 +13,7 @@ Make sure to rename this file to the name of your repository and add the filenam
 :page-est-time: 15 mins 
 :description:  Use SQL to perform streaming queries, data enrichment, windowed aggregations, stream-to-stream joins, and create jobs.
 
-This tutorial introduces you to using SQL on Viridian via the SQL browser. You will run streaming queries, perform data enrichment, windowed aggregations, and create a streaming job.
+This tutorial introduces you to using SQL on Viridian Cloud via the SQL browser. You will run streaming queries, perform data enrichment, windowed aggregations, and create a streaming job.
 
 // Give some context about the use case for this tutorial. What will the reader learn?
 == Context
@@ -32,8 +32,8 @@ In this tutorial, you will use stock ticker data to practice all the functionali
 
 Before starting this tutorial, make sure that you meet the following prerequisites:
 
-* https://docs.hazelcast.com/cloud/get-started[Create a Development cluster in Viridian.,window=_blank]
-* https://github.com/hazelcast/hazelcast-cloud-cli[Connect the Command Line Client to your cluster,window=_blank] or open Management Center for your Viridian instance.
+* https://docs.hazelcast.com/cloud/get-started[Create a Development Cluster in Viridian Cloud.,window=_blank]
+* https://github.com/hazelcast/hazelcast-cloud-cli[Connect the Command Line Client to your cluster,window=_blank] or open Management Center for your Viridian Cloud instance.
 
 == Step 1. Set up Streaming Data
 
@@ -50,7 +50,7 @@ In "the real world", you would begin by  https://docs.hazelcast.com/hazelcast/la
 
 [NOTE]
 ====
-For a detailed explanation of using SQL to generate data, refer to the Generating Streaming Data using SQL tutorial.
+For a detailed explanation of using SQL to generate data, refer to the Generating Streaming Data Using SQL tutorial.
 ====
 
 . If you are using the CLC, open the SQL shell.
