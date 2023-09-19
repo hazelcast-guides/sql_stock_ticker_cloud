@@ -33,7 +33,7 @@ In this tutorial, you will use stock ticker data to practice all the functionali
 Before starting this tutorial, make sure that you meet the following prerequisites:
 
 * https://docs.hazelcast.com/cloud/get-started[Create a Development Cluster in Viridian Cloud.,window=_blank]
-* https://github.com/hazelcast/hazelcast-cloud-cli[Connect the Command Line Client to your cluster,window=_blank] or open Management Center for your Viridian Cloud instance.
+* https://docs.hazelcast.com/clc/5.3/get-started[Connect the Command Line Client to your cluster,window=_blank] or open the SQL tab for your Viridian Cloud instance.
 
 == Step 1. Set up Streaming Data
 
