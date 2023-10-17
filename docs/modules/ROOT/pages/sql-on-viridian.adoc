@@ -23,8 +23,8 @@ In this tutorial, you will use stock ticker data to practice all the functionali
 * Create streaming queries
 * Use SQL to populate an in-memory table for enrichment
 * Enrich streaming data
-* Perform data aggregations on streaming data using windowing
 * Create stream-to-stream joins
+* Perform data aggregations on streaming data using windowing
 * Create a job to sink enriched, aggregated data into an in-memory table
 
 // Optional: What does the reader need before starting this tutorial? Think about tools or knowledge. Delete this section if your readers can dive straight into the lesson without requiring any prerequisite knowledge.
