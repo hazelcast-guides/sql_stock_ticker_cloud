@@ -23,8 +23,8 @@ In this tutorial, you will use stock ticker data to practice all the functionali
 * Create streaming queries
 * Use SQL to populate an in-memory table for enrichment
 * Enrich streaming data
-* Create stream-to-stream joins
 * Perform data aggregations on streaming data using windowing
+* Create stream-to-stream joins
 * Create a job to sink enriched, aggregated data into an in-memory table
 
 // Optional: What does the reader need before starting this tutorial? Think about tools or knowledge. Delete this section if your readers can dive straight into the lesson without requiring any prerequisite knowledge.
@@ -98,7 +98,6 @@ FROM
      FROM TABLE(generate_stream(100)));
 
 ```
-. If you're using the CLC SQL shell, press CTRL-C to return to the prompt. 
 
 . Verify that the data is streaming by issuing a query.
 +
@@ -106,6 +105,8 @@ FROM
 SELECT * FROM trades;
 ``` 
 If you are using the SQL browser, you will need to press "Execute Query" to send the code to Hazelcast.
+
+. If you're using the CLC SQL shell, press CTRL-C to return to the prompt. 
 
 . Stop the query by clicking the "Stop Query" button in the SQL browser or typing CTRL-C in the SQL shell.
 
@@ -197,7 +198,61 @@ ON companies.ticker = trades.ticker;
 
 ```
 
-== Step 4: Stream to Stream Joins
+== Step 4. Watermarking and Windowing
+
+Data aggregation is a common ETL function, but how do you do it on streaming data? The answer is to perform it over specific windows of time. The aggregations and computations are performed on all data included within each window. The output is then updated for each window. 
+
+[NOTE]
+====
+For a detailed description of watermarking and window types, refer to the https://docs.hazelcast.com/hazelcast/5.2/sql/querying-streams#windowing[SQL Stream Processing] topic in the Hazelcast documentation. 
+====
+
+. In order to ensure that data is included in the correct window, you have to first create a new view that orders the data based on one of the data fields (the watermark). In this tutorial, we'll use timestamp as the watermark. 
++
+```sql
+CREATE OR REPLACE VIEW trades_ordered AS
+SELECT *
+  FROM TABLE(IMPOSE_ORDER(
+  TABLE trades,
+  DESCRIPTOR(trade_ts),
+  INTERVAL '0.5' SECONDS));
+```
+
+. For our first aggregation, we'll display the minimum and maximum price for each stock over a 5 second window. (Output will not appear until 5 seconds have elapsed.)
++
+```sql
+SELECT 
+     window_start,
+     window_end, 
+     ticker, 
+     ROUND(MAX(price),2) AS high, 
+     ROUND(MIN(price),2) AS low
+FROM TABLE(TUMBLE(
+     TABLE trades_ordered,
+     DESCRIPTOR(trade_ts),
+     INTERVAL '5' SECONDS
+))
+GROUP BY 1,2,3
+;
+```
+This query will display the average price over a 5 second window, updating the result every second.
++
+```sql
+SELECT 
+     window_start, 
+     window_end, 
+     ticker, 
+     ROUND(AVG(price),2) as average
+FROM TABLE(HOP(
+  TABLE trades_ordered,
+  DESCRIPTOR(trade_ts),
+  INTERVAL '5' SECONDS, INTERVAL '1' SECOND
+))
+GROUP BY 1,2,3;
+```
+
+
+== Step 5: Stream to Stream Joins
 
 You can join two or more related streams of data and store the results. In this example, we're going to create two different joined queries:
 
@@ -281,59 +336,6 @@ FROM trades_ordered AS tro
 JOIN priceavg AS pr
 ON tro.ticker = pr.ticker
 AND pr.window_end BETWEEN tro.trade_ts AND tro.trade_ts + INTERVAL '0.1' SECOND; 
-```
-
-== Step 5. Watermarking and Windowing
-
-Data aggregation is a common ETL function, but how do you do it on streaming data? The answer is to perform it over specific windows of time. The aggregations and computations are performed on all data included within each window. The output is then updated for each window. 
-
-[NOTE]
-====
-For a detailed description of watermarking and window types, refer to the https://docs.hazelcast.com/hazelcast/5.2/sql/querying-streams#windowing[SQL Stream Processing] topic in the Hazelcast documentation. 
-====
-
-. In order to ensure that data is included in the correct window, you have to first create a new view that orders the data based on one of the data fields (the watermark). In this tutorial, we'll use timestamp as the watermark. 
-+
-```sql
-CREATE OR REPLACE VIEW trades_ordered AS
-SELECT *
-  FROM TABLE(IMPOSE_ORDER(
-  TABLE trades,
-  DESCRIPTOR(trade_ts),
-  INTERVAL '0.5' SECONDS));
-```
-
-. For our first aggregation, we'll display the minimum and maximum price for each stock over a 5 second window. (Output will not appear until 5 seconds have elapsed.)
-+
-```sql
-SELECT 
-     window_start,
-     window_end, 
-     ticker, 
-     ROUND(MAX(price),2) AS high, 
-     ROUND(MIN(price),2) AS low
-FROM TABLE(TUMBLE(
-     TABLE trades_ordered,
-     DESCRIPTOR(trade_ts),
-     INTERVAL '5' SECONDS
-))
-GROUP BY 1,2,3
-;
-```
-This query will display the average price over a 5 second window, updating the result every second.
-+
-```sql
-SELECT 
-     window_start, 
-     window_end, 
-     ticker, 
-     ROUND(AVG(price),2) as average
-FROM TABLE(HOP(
-  TABLE trades_ordered,
-  DESCRIPTOR(trade_ts),
-  INTERVAL '5' SECONDS, INTERVAL '1' SECOND
-))
-GROUP BY 1,2,3;
 ```
 
 == Step 6: Create an SQL Job
