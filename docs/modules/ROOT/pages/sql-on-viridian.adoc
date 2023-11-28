@@ -56,7 +56,7 @@ For a detailed explanation of using SQL to generate data, refer to the Generatin
 . If you are using the CLC, open the SQL shell.
 +
 ```bash
-clc sql
+clc
 ```
 
 . If you are using Management Center, open the SQL tab.
@@ -98,7 +98,6 @@ FROM
      FROM TABLE(generate_stream(100)));
 
 ```
-. If you're using the CLC SQL shell, press CTRL-C to return to the prompt. 
 
 . Verify that the data is streaming by issuing a query.
 +
@@ -106,6 +105,8 @@ FROM
 SELECT * FROM trades;
 ``` 
 If you are using the SQL browser, you will need to press "Execute Query" to send the code to Hazelcast.
+
+. If you're using the CLC SQL shell, press CTRL-C to return to the prompt. 
 
 . Stop the query by clicking the "Stop Query" button in the SQL browser or typing CTRL-C in the SQL shell.
 
