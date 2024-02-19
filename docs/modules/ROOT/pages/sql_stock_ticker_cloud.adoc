@@ -124,20 +124,20 @@ Because the data is randomly generated, you may have to wait several seconds for
 +
 ```sql
 SELECT ticker AS Symbol, ROUND(price,2) AS Price, amount AS "Shares Sold"
-FROM trades;
+FROM trades_topic;
 ```
 . Limit the output to one stock symbol. 
 +
 ```sql
 SELECT ticker AS Symbol, ROUND(price,2) AS Price, amount AS "Shares Sold"
-FROM trades
+FROM trades_topic
 WHERE ticker = 'APPL';
 ```
 . Limit the output to one symbol and sales of over 50 shares. 
 +
 ```sql
 SELECT ticker AS Symbol, ROUND(price,2), amount AS "Shares Sold"
-FROM trades
+FROM trades_topic
 WHERE ticker = 'VOO' AND amount > 50; 
 ```
 
@@ -186,8 +186,8 @@ SELECT
     trades.ticker AS Symbol, 
     companies.company as Company,
      ROUND(trades.price,2) AS Price, 
-     trades.amount AS "Shares Sold"
-FROM trades
+     trades.amt AS "Shares Sold"
+FROM trades_topic AS trades
 JOIN companies
 ON companies.ticker = trades.ticker;
 
@@ -208,7 +208,7 @@ For a detailed description of watermarking and window types, refer to the https:
 CREATE OR REPLACE VIEW trades_ordered AS
 SELECT *
   FROM TABLE(IMPOSE_ORDER(
-  TABLE trades,
+  TABLE trades_topic,
   DESCRIPTOR(trade_ts),
   INTERVAL '0.5' SECONDS));
 ```
@@ -449,9 +449,9 @@ In this tutorial, you learned the following:
 == See Also
 
 // Optionally, add some links to resources, such as other related guides.
-https://docs.hazelcast.com/hazelcast/5.2/sql/querying-streams[Querying Streams] (Documentation)
+https://docs.hazelcast.com/hazelcast/latest/sql/querying-streams[Stream Processing in SQL] (Documentation)
 
-https://docs.hazelcast.com/hazelcast/5.2/sql/sql-statements[SQL Statements] (Documentation)
+https://docs.hazelcast.com/hazelcast/latest/sql/sql-statements[SQL Statements] (Documentation)
 
 https://docs.hazelcast.com/tutorials/join-two-streams[Stream-to-Stream Joins] (Tutorial)
 
