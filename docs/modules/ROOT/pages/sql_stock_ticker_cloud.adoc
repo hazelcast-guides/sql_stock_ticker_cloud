@@ -3,7 +3,7 @@ Make sure to rename this file to the name of your repository and add the filenam
 ////
 
 // Describe the title of your article by replacing 'Tutorial template' with the page name you want to publish.
-= SQL Basics on Viridian Cloud (Stock Ticker)
+= SQL Basics on Hazelcast Cloud (Stock Ticker)
 // Add required variables
 :page-layout: tutorial
 :page-product: cloud 
@@ -13,7 +13,7 @@ Make sure to rename this file to the name of your repository and add the filenam
 :page-est-time: 15 mins 
 :description:  Use SQL to perform streaming queries, data enrichment, windowed aggregations, stream-to-stream joins, and create jobs.
 
-This tutorial introduces you to using SQL on Viridian Cloud via the SQL browser. You will run streaming queries, perform data enrichment, windowed aggregations, and create a streaming job.
+This tutorial introduces you to using SQL on Hazelcast Cloud via the SQL browser. You will run streaming queries, perform data enrichment, windowed aggregations, and create a streaming job.
 
 // Give some context about the use case for this tutorial. What will the reader learn?
 == Context
@@ -32,10 +32,10 @@ In this tutorial, you will use stock ticker data to practice all the functionali
 
 Before starting this tutorial, make sure that you meet the following prerequisites:
 
-* https://docs.hazelcast.com/cloud/get-started[Create a Development Cluster in Viridian Cloud.,window=_blank]
-* https://docs.hazelcast.com/clc/5.3/get-started[Connect the Command Line Client to your cluster,window=_blank] or open the SQL tab for your Viridian Cloud instance.
+* https://docs.hazelcast.com/cloud/get-started[Create a Cluster in Hazelcast Cloud.,window=_blank]
+* https://docs.hazelcast.com/clc/5.3/get-started[Connect the Command Line Client to your cluster,window=_blank] or open the SQL tab for your Hazelcast Cloud instance.
 
-== Step 1. Set up Streaming Data
+== Step 1. Connect to Streaming Data
 
 ////
 Introduce what your audience will learn in each step, then continue to write the steps in the tutorial.
@@ -46,63 +46,58 @@ You can choose one of these approaches to write your tutorial part:
 
 Whatever option you choose when designing your tutorial should be carried through in subsequent parts.
 ////
-In "the real world", you would begin by  https://docs.hazelcast.com/hazelcast/latest/sql/mapping-to-kafka[creating a mapping,window=_blank] from an external streaming source (e.g. a Kafka server). For the purposes of this tutorial, we will use the 'generate' and 'view' functionality of SQL to create a local stream of stock ticker data. 
+In this step, you will connect your Hazelcast Cloud cluster to a source of streaming data - in this case, a Kafka server.
 
 [NOTE]
 ====
-For a detailed explanation of using SQL to generate data, refer to the Generating Streaming Data Using SQL tutorial.
+For more information on the commands in this section, refer to https://docs.hazelcast.com/hazelcast/latest/sql/sql-statements#ddl-statements
 ====
 
-. If you are using the CLC, open the SQL shell.
+. Open an SQL input interface
+.. If you are using the CLC, open the SQL shell.
 +
 ```bash
 clc
 ```
 
-. If you are using Management Center, open the SQL tab.
+.. If you are using Management Center, open the SQL tab at the top of the screen.
 
-. Use an SQL view to generate streaming data.
+.. If you are using the Cloud dashboard, open the SQL window using the button on the left side. Open a new SQL window by clicking the + tab.
+
+. Enter the following code to connect to the Kafka streaming server. 
 +
 ```sql
-
-CREATE OR REPLACE VIEW trades AS
-  SELECT id, 
-       CASE WHEN tickRand BETWEEN 0 AND 0.1 THEN 'APPL'
-            WHEN tickRand BETWEEN 0.1 AND 0.2 THEN 'GOOGL'
-            WHEN tickRand BETWEEN 0.2 AND 0.3 THEN 'META'
-            WHEN tickRand BETWEEN 0.3 AND 0.4 THEN 'NFLX'
-            WHEN tickRand BETWEEN 0.4 AND 0.5 THEN 'AMZN'
-            WHEN tickRand BETWEEN 0.5 AND 0.6 THEN 'INTC'
-            WHEN tickRand BETWEEN 0.6 AND 0.7 THEN 'CSCO'
-            WHEN tickRand BETWEEN 0.7 AND 0.8 THEN 'BABA'
-            ELSE 'VOO' 
-       END as ticker,
-       CASE WHEN tickRand BETWEEN 0 and 0.1 then tickRand*50+1
-            WHEN tickRand BETWEEN 0.1 AND 0.2 THEN tickRand*75+.6
-            WHEN tickRand BETWEEN 0.2 AND 0.3 THEN tickRand*60+.2
-            WHEN tickRand BETWEEN 0.3 AND 0.4 THEN tickRand*30+.3
-            WHEN tickRand BETWEEN 0.4 AND 0.5 THEN tickRand*43+.7
-            WHEN tickRand BETWEEN 0.5 AND 0.6 THEN tickRand*100+.4
-            WHEN tickRand BETWEEN 0.6 AND 0.7 THEN tickRand*25+.8
-            WHEN tickRand BETWEEN 0.6 AND 0.7 THEN tickRand*80+.5
-            WHEN tickRand BETWEEN 0.7 AND 0.8 THEN tickRand*10+.1
-            ELSE tickRand*100+4
-       END as price,
-       trade_ts,
-       amount
-FROM
-    (SELECT v as id, 
-           RAND(v*v) as tickRand,
-           TO_TIMESTAMP_TZ(v*10 + 1645484400000) as trade_ts,
-           ROUND(RAND()*100, 0) as amount
-     FROM TABLE(generate_stream(100)));
-
+CREATE OR REPLACE DATA CONNECTION TrainingKafkaConnection 
+     TYPE Kafka 
+     NOT SHARED 
+     OPTIONS (
+          'bootstrap.servers'='35.88.250.10:9092',
+          'security.protocol'='SASL_PLAINTEXT',
+          'client.dns.lookup'='use_all_dns_ips',
+          'sasl.mechanism'='SCRAM-SHA-512',
+          'sasl.jaas.config'='org.apache.kafka.common.security.scram.ScramLoginModule required username="training_ro" password="h@zelcast!";', 'session.timeout.ms'='45000');
 ```
-
+. Create a mapping for the stock ticker data stream.
++
+```sql
+CREATE OR REPLACE MAPPING "trades_topic"
+EXTERNAL NAME "sql_basics.trades" (
+    id bigint,
+    ticker varchar,
+    price double,
+    trade_ts timestamp with time zone,
+    amt int
+)
+DATA CONNECTION "TrainingKafkaConnection"
+OPTIONS (
+    'keyFormat' = 'varchar',
+    'valueFormat' = 'json-flat'
+);
+```
 . Verify that the data is streaming by issuing a query.
 +
 ```sql
-SELECT * FROM trades;
+SELECT * FROM trades_topic;
 ``` 
 If you are using the SQL browser, you will need to press "Execute Query" to send the code to Hazelcast.
 
