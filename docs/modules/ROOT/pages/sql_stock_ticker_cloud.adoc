@@ -325,7 +325,7 @@ SELECT
      pr.average AS Average,
      ROUND(((tro.price/pr.average)-1)*100,2) AS Percent_Change,
      CASE
-          WHEN (ROUND(((tro.price/pr.average)-1)*100,2) > 1) THEN 'Up'
+          WHEN (ROUND(((tro.price/pr.average)-1)*100,2) > 0) THEN 'Up'
           ELSE 'Down'
      END AS Up_Down
 FROM trades_ordered AS tro
