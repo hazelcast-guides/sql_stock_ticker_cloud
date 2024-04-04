@@ -187,7 +187,7 @@ SELECT
     trades.ticker AS Symbol, 
     companies.company as Company,
      ROUND(trades.price,2) AS Price, 
-     trades.amount AS "Shares Sold"
+     trades.amt AS "Shares Sold"
 FROM trades_topic AS trades
 JOIN companies
 ON companies.ticker = trades.ticker;
