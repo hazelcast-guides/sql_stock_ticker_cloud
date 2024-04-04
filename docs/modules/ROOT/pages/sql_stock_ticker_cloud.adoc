@@ -87,7 +87,7 @@ EXTERNAL NAME "sql_basics.trades" (
     ticker varchar,
     price double,
     trade_ts timestamp with time zone,
-    amount int
+    amount int EXTERNAL NAME amt
 )
 DATA CONNECTION "TrainingKafkaConnection"
 OPTIONS (
