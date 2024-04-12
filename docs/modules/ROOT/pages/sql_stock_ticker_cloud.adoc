@@ -63,7 +63,7 @@ clc
 
 .. If you are using Management Center, open the SQL tab at the top of the screen.
 
-.. If you are using the Cloud dashboard, open the SQL window using the button on the left side. Open a new SQL window by clicking the + tab.
+.. If you are using the Cloud dashboard, select your cluster and then select SQL from the side navigation bar.
 
 . Enter the following code to connect to the Kafka streaming server. 
 +
