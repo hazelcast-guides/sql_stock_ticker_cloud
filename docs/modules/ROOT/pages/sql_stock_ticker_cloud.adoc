@@ -34,7 +34,7 @@ In this tutorial, you will use stock ticker data to practice all the functionali
 Before starting this tutorial, make sure that you meet the following prerequisites:
 
 * https://docs.hazelcast.com/cloud/get-started[Create a Cluster in Hazelcast Cloud.,window=_blank]
-* https://docs.hazelcast.com/clc/5.3/get-started[Connect the Command Line Client to your cluster,window=_blank] or open the SQL tab for your Hazelcast Cloud instance.
+* https://docs.hazelcast.com/clc/latest/get-started[Connect the Command Line Client to your cluster,window=_blank] or open the SQL tab for your Hazelcast Cloud instance.
 
 == Step 1. Connect to Streaming Data
 
